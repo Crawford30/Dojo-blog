@@ -11,8 +11,8 @@ const Home = () => {
 
     const [blogs, setBlogs] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
-      const [name, setName] = useState('mario');
+    const [name, setName] = useState('mario');
+    const [error, setError] = useState(null);
     
        
         //  const handleDelete = (id) => {
@@ -23,14 +23,26 @@ const Home = () => {
         useEffect(() => {
             fetch('http://localhost:8000/blogs')
             .then(res => {
+                if(!res.ok){
+                    throw Error('Data not fetched');
+
+                }
                return res.json();
             })
             .then((data) => {
                 console.log(data);
                 setBlogs(data);
                 setIsLoading(false);
+                setError(null);
+                
 
             })
+            .catch((err) => {
+                setIsLoading(false);
+                setError(err.message);
+                console.log(err.message);
+
+            });
             console.log('use effect');
             console.log(name);
         }, [name]);
@@ -44,8 +56,10 @@ const Home = () => {
         <div className="home">
            {/* <BlogList blogs={blogs} title="All Blogs"/>  */}
            {/* {blogs &&  <BlogList blogs={blogs.filter((blog) =>  blog.author === 'mario') } title="Mario's Blogs" handleDelete={handleDelete}/>} */}
+           {error && <div>{error}</div>}
 
            {isLoading && <div>Loading...</div>}
+
 
            {blogs &&  <BlogList blogs={blogs} title="Mario's Blogs" />}
           
