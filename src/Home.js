@@ -10,6 +10,7 @@ const Home = () => {
 
 
     const [blogs, setBlogs] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
       const [name, setName] = useState('mario');
     
@@ -27,6 +28,7 @@ const Home = () => {
             .then((data) => {
                 console.log(data);
                 setBlogs(data);
+                setIsLoading(false);
 
             })
             console.log('use effect');
@@ -42,6 +44,8 @@ const Home = () => {
         <div className="home">
            {/* <BlogList blogs={blogs} title="All Blogs"/>  */}
            {/* {blogs &&  <BlogList blogs={blogs.filter((blog) =>  blog.author === 'mario') } title="Mario's Blogs" handleDelete={handleDelete}/>} */}
+
+           {isLoading && <div>Loading...</div>}
 
            {blogs &&  <BlogList blogs={blogs} title="Mario's Blogs" />}
           
