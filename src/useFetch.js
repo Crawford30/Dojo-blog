@@ -7,28 +7,42 @@ const useFetch = (url) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(url)
-        .then(res => {
-            if(!res.ok){
-                throw Error('Data not fetched');
+        //Abort Controller
+        const abortCont = new AbortController();
+        setTimeout(() => {
+            fetch(url, {signal: abortCont.signal})
+            .then(res => {
+                if(!res.ok){
+                    throw Error('Data not fetched');
+    
+                }
+               return res.json();
+            })
+            .then((data) => {
+                console.log(data);
+                setData(data);
+                setIsLoading(false);
+                setError(null);
+                
+    
+            })
+            .catch((err) => {
+                if(err.name == 'AbortError'){
+                    console.log('Fetch Aborted');
+                }else {
+                    setIsLoading(false);
+                    setError(err.message);
+                    console.log(err.message);
+                }
+               
+    
+            }, 8000);
+            //Clean up function
 
-            }
-           return res.json();
-        })
-        .then((data) => {
-            console.log(data);
-            setData(data);
-            setIsLoading(false);
-            setError(null);
-            
-
-        })
-        .catch((err) => {
-            setIsLoading(false);
-            setError(err.message);
-            console.log(err.message);
-
+            return () => abortCont.abort();
+            //console.log('Clea Up');
         });
+       
         console.log('use effect');
         
     }, [url]);
